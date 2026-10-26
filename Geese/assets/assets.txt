@@ -1,1 +1,4 @@
+Tiles.png
+Tiles.tsx
+goosemap.tmx
 libgdx.png
