@@ -16,6 +16,7 @@ public class Main extends ApplicationAdapter {
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
+    private Fog fog;
 
     @Override
     public void create() {
@@ -24,6 +25,7 @@ public class Main extends ApplicationAdapter {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 600);
         camera.position.set(1280, 1280, 0);
+        fog = new Fog();
     }
 
     @Override
@@ -42,6 +44,7 @@ public class Main extends ApplicationAdapter {
         camera.update();
         renderer.setView(camera);
         renderer.render();
+        fog.draw();
         
     }
 
@@ -49,6 +52,7 @@ public class Main extends ApplicationAdapter {
     public void dispose() {
         renderer.dispose();
         map.dispose();
+        fog.dispose();
     }
 
 }
