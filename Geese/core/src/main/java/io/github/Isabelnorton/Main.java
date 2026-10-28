@@ -1,5 +1,6 @@
 package io.github.Isabelnorton;
 
+import io.github.Isabelnorton.items.ItemConfig;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -20,6 +21,7 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void create() {
+        ItemConfig.load();
         map = new TmxMapLoader().load("goosemap.tmx");
         renderer = new OrthogonalTiledMapRenderer(map);
         camera = new OrthographicCamera();
