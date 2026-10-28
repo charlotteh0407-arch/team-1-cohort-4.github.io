@@ -1,0 +1,18 @@
+{
+  "Airhorn": {
+    "cooldownSeconds" : 5,
+    "range" : 150,
+    "angle" : 60
+  },
+  "SeedPacket": {
+    "range" : 150,
+    "radius": 150,
+    "maxStack": 4
+  },
+  "costume": {
+    "durationSeconds" : 15
+  },
+  "freeze": {
+    "durationSeconds": 10
+  }
+}
