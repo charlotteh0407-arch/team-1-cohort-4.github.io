@@ -1,5 +1,0 @@
-Tiles.png
-Tiles.tsx
-fog.png
-goosemap.tmx
-libgdx.png
