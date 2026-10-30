@@ -18,19 +18,17 @@ public class Fog implements Disposable {
         texture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
     }
 
-    public void draw() {
+    public void draw(SpriteBatch batch) {
         drift += 0.02f * Gdx.graphics.getDeltaTime();
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
-        batch.begin();
         batch.draw(texture, 0f, 0f, w, h,
                 drift,
                 drift,
                 w / texture.getWidth() + drift,
                 h / texture.getHeight() + drift);
-        batch.end();
     }
 
     @Override
