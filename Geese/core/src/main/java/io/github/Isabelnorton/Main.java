@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.files.FileHandle;
 
 import io.github.Isabelnorton.GeeseSystem.*;
 
@@ -57,10 +56,10 @@ public class Main extends ApplicationAdapter {
         fog = new Fog(fogTexture);
 
         Texture gooseTexture = assetManager.get("goose.png",Texture.class);
-        //goose = new Goose(gooseTexture);
+        //goose = new Goose(gooseTexture); TOBY IS WORKING ON DIS
 
+        //Map setup
         map = assetManager.get("goosemap.tmx", TiledMap.class);
-        
         renderer = new OrthogonalTiledMapRenderer(map);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 600);
@@ -99,6 +98,8 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        player.dispose();
+        fog.dispose();
         assetManager.dispose();
     }
 }
