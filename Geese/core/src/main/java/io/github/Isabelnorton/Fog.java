@@ -6,14 +6,15 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 
+
 public class Fog implements Disposable {
 
-    // private final SpriteBatch batch = new SpriteBatch();
-    private final Texture texture = new Texture(Gdx.files.internal("fog.png"));
-    //private boolean active = false;
+    private final SpriteBatch batch = new SpriteBatch();
+    private final Texture texture;
     private float drift;
 
-    public Fog() {
+    public Fog(Texture texture) {
+        this.texture = texture;
         texture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
     }
 
@@ -32,6 +33,6 @@ public class Fog implements Disposable {
 
     @Override
     public void dispose() {
-        texture.dispose();
+        batch.dispose();
     }
 }
