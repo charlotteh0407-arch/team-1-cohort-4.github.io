@@ -35,7 +35,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         assetManager = new AssetManager();
-        ItemConfig.load();
+        GameConfig.load();
 
         //Setup the map loader
         assetManager.setLoader(

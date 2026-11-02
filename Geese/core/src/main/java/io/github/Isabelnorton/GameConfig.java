@@ -19,28 +19,30 @@ public class GameConfig{
         public PositionConfig StartPos;
         public SizeConfig Size;
     }
+
+    //nested the sub-item config classes to avoid them popping up in autocorrect
     public static class ItemsConfig{
         public AirhornConfig Airhorn;
         public SeedPacketConfig SeedPacket;
         public FreezeConfig Freeze;
         public CostumeConfig Costume;
-    }
-    //Class hierarchy mimics hierarchy in jsonfile
-    public static class SeedPacketConfig{
-        public float range;
-        public float radius;
-        public int maxStack;
-    }
-    public static class AirhornConfig{
-        public float cooldownSeconds;
-        public float range;
-        public float angle;
-    }
-    public static class FreezeConfig{
-        public float durationSeconds;
-    }
-    public static class CostumeConfig{
-        public float durationSeconds;
+
+        public static class SeedPacketConfig{
+            public float range;
+            public float radius;
+            public int maxStack;
+        }
+        public static class AirhornConfig{
+            public float cooldownSeconds;
+            public float range;
+            public float angle;
+        }
+        public static class FreezeConfig{
+            public float durationSeconds;
+        }
+        public static class CostumeConfig{
+            public float durationSeconds;
+        }
     }
 
     //reusable for future positions and sizes, just make sure to name them correctly in the json
