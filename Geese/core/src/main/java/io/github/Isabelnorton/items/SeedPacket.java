@@ -1,14 +1,17 @@
 package io.github.Isabelnorton.items;
 
+import com.badlogic.gdx.Game;
+import io.github.Isabelnorton.GameConfig;
+
 public class SeedPacket implements InventoryItem {
     private final float range;
     private final float radius;
     private final int maxStack;
 
     public SeedPacket() {
-        range = ItemConfig.seedPacketRange;
-        radius = ItemConfig.seedPacketRadius;
-        maxStack = ItemConfig.seedPacketMaxStack;
+        range = GameConfig.item.SeedPacket.range;
+        radius = GameConfig.item.SeedPacket.radius;
+        maxStack = GameConfig.item.SeedPacket.maxStack;
     }
 
     @Override

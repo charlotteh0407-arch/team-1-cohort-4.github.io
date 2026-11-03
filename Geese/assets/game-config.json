@@ -1,0 +1,44 @@
+{
+  "Camera": {
+    "Viewport": {
+      "width":800,
+      "height": 600
+    },
+    "defaultZoom": 0.75,
+    "MapBounds": {
+      "width": 2560,
+      "height": 2560
+    }
+  },
+
+  "Player": {
+    "speed": 200,
+    "StartPos": {
+      "x": 20,
+      "y": 20
+    },
+    "Size": {
+      "width": 60,
+      "height": 60
+    }
+  },
+
+  "Items": {
+    "Airhorn": {
+      "cooldownSeconds": 5,
+      "range": 150,
+      "angle": 60
+    },
+    "SeedPacket": {
+      "range": 150,
+      "radius": 150,
+      "maxStack": 4
+    },
+    "Costume": {
+      "durationSeconds": 15
+    },
+    "Freeze": {
+      "durationSeconds": 10
+    }
+  }
+}

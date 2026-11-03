@@ -1,6 +1,5 @@
 package io.github.Isabelnorton;
 
-import io.github.Isabelnorton.items.ItemConfig;
 // import io.github.Isabelnorton.Player;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -35,7 +34,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         assetManager = new AssetManager();
-        ItemConfig.load();
+        GameConfig.load();
 
         //Setup the map loader
         assetManager.setLoader(
@@ -62,9 +61,11 @@ public class Main extends ApplicationAdapter {
         map = assetManager.get("goosemap.tmx", TiledMap.class);
         renderer = new OrthogonalTiledMapRenderer(map);
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 600);
+        float vpWidth = GameConfig.camera.Viewport.width;
+        float vpHeight = GameConfig.camera.Viewport.height;
+        camera.setToOrtho(false, vpWidth, vpHeight);
         camera.position.set(1280, 1280, 0);
-        camera.zoom = 0.75f;
+        camera.zoom = GameConfig.camera.defaultZoom;
         spriteBatch = new SpriteBatch();
         player = new Player("player.png");
     }
@@ -73,14 +74,16 @@ public class Main extends ApplicationAdapter {
     public void render() {
         float dt = Gdx.graphics.getDeltaTime();
         float move = speed * dt;
+        float mapWidth = GameConfig.camera.MapBounds.width;
+        float mapHeight = GameConfig.camera.MapBounds.height;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) camera.position.x -= move;
         if (Gdx.input.isKeyPressed(Input.Keys.D)) camera.position.x += move;
         if (Gdx.input.isKeyPressed(Input.Keys.W)) camera.position.y += move;
         if (Gdx.input.isKeyPressed(Input.Keys.S)) camera.position.y -= move;
         float halfWidth = camera.viewportWidth * 0.5f * camera.zoom;
         float halfHeight = camera.viewportHeight * 0.5f * camera.zoom;
-        camera.position.x = MathUtils.clamp(camera.position.x, halfWidth, 2560 - halfWidth);
-        camera.position.y = MathUtils.clamp(camera.position.y, halfHeight, 2560 - halfHeight);
+        camera.position.x = MathUtils.clamp(camera.position.x, halfWidth, mapWidth - halfWidth);
+        camera.position.y = MathUtils.clamp(camera.position.y, halfHeight, mapHeight - halfHeight);
 
         player.update(dt);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);

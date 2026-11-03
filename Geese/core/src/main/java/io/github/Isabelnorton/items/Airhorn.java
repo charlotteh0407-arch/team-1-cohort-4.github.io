@@ -1,5 +1,6 @@
 package io.github.Isabelnorton.items;
 import com.badlogic.gdx.utils.TimeUtils;
+import io.github.Isabelnorton.GameConfig;
 
 
 //Airhorn functions on a cooldown - blasts a cone area in front of the player to deter gooses
@@ -12,13 +13,12 @@ public class Airhorn implements InventoryItem{
 
     public Airhorn(){
         //converts cooldown in seconds to milliseconds, calculates as a long (airhorn cooldown is a float), this because Time.Utils.millis() returns a long
-        cooldownMillis = (long) (ItemConfig.airhornCooldown * 1000);
-
+        cooldownMillis = (long) (GameConfig.item.Airhorn.cooldownSeconds * 1000);
         lastUsedTime = TimeUtils.millis() - cooldownMillis;
         //calculates sqaure of range for easier hit detection
-        float range = ItemConfig.airhornRange;
+        float range = GameConfig.item.Airhorn.range;
         rangeSquared = range*range;
-        angle = ItemConfig.airhornAngle;
+        angle = GameConfig.item.Airhorn.angle;
     }
 
     @Override
