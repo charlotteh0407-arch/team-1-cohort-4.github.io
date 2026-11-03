@@ -9,7 +9,7 @@ public class Player {
     
     private Texture Player_texture;
 
-    private float spriteSpeed = 200f;
+    private float spriteSpeed = GameConfig.player.speed;
     private float xPos;
     private float yPos;
     private float playerWidth;
@@ -17,10 +17,10 @@ public class Player {
 
     public Player(String filePath){
         this.Player_texture = new Texture(Gdx.files.internal(filePath));
-        this.xPos = 20;
-        this.yPos = 20;
-        this.playerWidth = 60;
-        this.playerHeight = 60;
+        this.xPos = GameConfig.player.StartPos.x;
+        this.yPos = GameConfig.player.StartPos.y;
+        this.playerWidth = GameConfig.player.Size.width;
+        this.playerHeight = GameConfig.player.Size.height;
     }
 
     public float getX() {

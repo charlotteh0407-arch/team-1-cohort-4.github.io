@@ -1,7 +1,8 @@
 Tiles.png
 Tiles.tsx
 fog.png
+game-config.json
+goose.png
 goosemap.tmx
-items.json
 libgdx.png
 player.png
