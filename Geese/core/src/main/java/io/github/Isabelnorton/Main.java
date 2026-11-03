@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.assets.AssetManager;
 
-import io.github.Isabelnorton.GeeseSystem.*;
+// import io.github.Isabelnorton.GeeseSystem.*;
 
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -30,7 +30,8 @@ public class Main extends ApplicationAdapter {
     private Fog fog;
     private Player player;
     private SpriteBatch spriteBatch;
-    private Goose goose;
+    private CountdownTimer Timer;
+    // private Goose goose;
 
     @Override
     public void create() {
@@ -55,7 +56,7 @@ public class Main extends ApplicationAdapter {
         Texture fogTexture = assetManager.get("fog.png", Texture.class);
         fog = new Fog(fogTexture);
 
-        Texture gooseTexture = assetManager.get("goose.png",Texture.class);
+        // Texture gooseTexture = assetManager.get("goose.png",Texture.class);
         //goose = new Goose(gooseTexture); TOBY IS WORKING ON DIS
 
         //Map setup
@@ -67,6 +68,7 @@ public class Main extends ApplicationAdapter {
         camera.zoom = 0.75f;
         spriteBatch = new SpriteBatch();
         player = new Player("player.png");
+        Timer = new CountdownTimer();
     }
 
     @Override
@@ -89,9 +91,12 @@ public class Main extends ApplicationAdapter {
         renderer.setView(camera);
         renderer.render();
 
+    
         spriteBatch.begin();
+        
         player.draw(spriteBatch, player.getX(), player.getY());
         fog.draw(spriteBatch);
+        Timer.draw(dt, spriteBatch);
         spriteBatch.end();
         
     }
@@ -101,5 +106,6 @@ public class Main extends ApplicationAdapter {
         player.dispose();
         fog.dispose();
         assetManager.dispose();
+        Timer.dispose();
     }
 }
