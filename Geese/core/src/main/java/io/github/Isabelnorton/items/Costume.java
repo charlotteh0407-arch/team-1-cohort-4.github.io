@@ -1,10 +1,12 @@
 package io.github.Isabelnorton.items;
 
+import io.github.Isabelnorton.GameConfig;
+
 public class Costume implements Item{
     private final long durationMillis;
 
     public Costume(){
-        durationMillis = (long) (ItemConfig.costumeDuration*1000);
+        durationMillis = (long) (GameConfig.item.Costume.durationSeconds*1000);
     }
 
     @Override

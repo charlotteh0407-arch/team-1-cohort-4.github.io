@@ -78,18 +78,25 @@ public class GameConfig{
         Json configJson = new Json();
         //if extra stuff is added to the json, it won't crash
         configJson.setIgnoreUnknownFields(true);
-        DataCatch dump = configJson.fromJson(DataCatch.class, Gdx.files.internal("game-config.json"));
-        if (dump != null) {
-            if (dump.Camera != null) {
-                camera = dump.Camera;
+        try {
+            //.fromJson returns instance variables, so they cannot be stored in an abstract class, hence the need for "DataCatch"
+            DataCatch dump = configJson.fromJson(DataCatch.class, Gdx.files.internal("game-config.json"));
+            if (dump != null) {
+                if (dump.Camera != null) {
+                    camera = dump.Camera;
+                }
+                if (dump.Player != null) {
+                    player = dump.Player;
+                }
+                if (dump.Items != null) {
+                    item = dump.Items;
+                }
             }
-            if (dump.Player != null) {
-                player = dump.Player;
+            System.out.println("Config loaded succesfully");
+        } catch (Exception e){
+            System.err.println("Config failed to load. Error: " + e.getMessage());
+
             }
-            if (dump.Items != null) {
-                item = dump.Items;
-            }
-        }
         loaded = true;
     }
 }
