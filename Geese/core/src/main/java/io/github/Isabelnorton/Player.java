@@ -4,8 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import io.github.Isabelnorton.items.ItemUser;
 
-public class Player {
+public class Player implements ItemUser{
     
     private Texture Player_texture;
 
@@ -14,6 +16,16 @@ public class Player {
     private float yPos;
     private float playerWidth;
     private float playerHeight;
+    private Vector2 direction = new Vector2(0,0);
+
+    @Override
+    public Vector2 getPos(){
+        return new Vector2(xPos,yPos);
+    };
+    @Override
+    public Vector2 getDirection(){
+        return direction;
+    }
 
     public Player(String filePath){
         this.Player_texture = new Texture(Gdx.files.internal(filePath));

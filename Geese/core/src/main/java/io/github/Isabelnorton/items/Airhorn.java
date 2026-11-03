@@ -42,12 +42,16 @@ public class Airhorn implements InventoryItem{
         //if airhorn has not been used it is not on cooldown
         if(currentTime - lastUsedTime >= cooldownMillis){
             lastUsedTime = currentTime;
+            honk(user);
             return true;
         }
         return false;
 
     }
 
+    public void honk(ItemUser user){
+
+    }
 }
 //if within cooldown, trigger blast in front of player else return false
 
