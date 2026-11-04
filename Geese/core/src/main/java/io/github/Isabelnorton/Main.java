@@ -18,8 +18,8 @@ import com.badlogic.gdx.assets.AssetManager;
 import io.github.Isabelnorton.GeeseSystem.*;
 
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 
+/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
 
     private static final float speed = 200f;
@@ -30,7 +30,9 @@ public class Main extends ApplicationAdapter {
     private Fog fog;
     private Player player;
     private SpriteBatch spriteBatch;
-    private Goose goose;
+
+    private GooseManager gooseManager;
+    private Integer numberOfGeese;
 
     @Override
     public void create() {
@@ -51,13 +53,6 @@ public class Main extends ApplicationAdapter {
         //Could implement a loading screen; this will wait for everything to load before continuing for now
         assetManager.finishLoading();
 
-        //Initialise assets
-        Texture fogTexture = assetManager.get("fog.png", Texture.class);
-        fog = new Fog(fogTexture);
-
-        Texture gooseTexture = assetManager.get("goose.png",Texture.class);
-        //goose = new Goose(gooseTexture); TOBY IS WORKING ON DIS
-
         //Map setup
         map = assetManager.get("goosemap.tmx", TiledMap.class);
         renderer = new OrthogonalTiledMapRenderer(map);
@@ -67,21 +62,42 @@ public class Main extends ApplicationAdapter {
         camera.zoom = 0.75f;
         spriteBatch = new SpriteBatch();
         player = new Player("player.png");
+
+        //Get map dimensions
+        int mapWidth = map.getProperties().get("width", Integer.class);
+        int mapHeight = map.getProperties().get("height", Integer.class);
+
+        int tileWidth = map.getProperties().get("tilewidth", Integer.class);
+        int tileHeight = map.getProperties().get("tileheight", Integer.class);
+
+        float worldWidth = mapWidth * tileWidth;
+        float worldHeight = mapHeight * tileHeight;
+
+        //Initialise assets
+        Texture fogTexture = assetManager.get("fog.png", Texture.class);
+        fog = new Fog(fogTexture);
+
+        Texture gooseTexture = assetManager.get("goose.png",Texture.class);
+        numberOfGeese = 25; //change this?
+        gooseManager = new GooseManager(gooseTexture, numberOfGeese, worldHeight, worldWidth);
     }
 
     @Override
     public void render() {
         float dt = Gdx.graphics.getDeltaTime();
+
+        //This conflicts with player movement?
+        /* 
         float move = speed * dt;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) camera.position.x -= move;
         if (Gdx.input.isKeyPressed(Input.Keys.D)) camera.position.x += move;
         if (Gdx.input.isKeyPressed(Input.Keys.W)) camera.position.y += move;
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) camera.position.y -= move;
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) camera.position.y -= move; */
         float halfWidth = camera.viewportWidth * 0.5f * camera.zoom;
         float halfHeight = camera.viewportHeight * 0.5f * camera.zoom;
         camera.position.x = MathUtils.clamp(camera.position.x, halfWidth, 2560 - halfWidth);
         camera.position.y = MathUtils.clamp(camera.position.y, halfHeight, 2560 - halfHeight);
-
+        
         player.update(dt);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
@@ -89,17 +105,20 @@ public class Main extends ApplicationAdapter {
         renderer.setView(camera);
         renderer.render();
 
+        //Spritebatch
         spriteBatch.begin();
         player.draw(spriteBatch, player.getX(), player.getY());
         fog.draw(spriteBatch);
         spriteBatch.end();
         
+        //Goose render
+        gooseManager.update(dt);
+        gooseManager.render(spriteBatch);
     }
 
     @Override
     public void dispose() {
         player.dispose();
-        fog.dispose();
         assetManager.dispose();
     }
 }
