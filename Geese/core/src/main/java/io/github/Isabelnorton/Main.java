@@ -17,15 +17,14 @@ import com.badlogic.gdx.assets.AssetManager;
 
 import io.github.Isabelnorton.GeeseSystem.*;
 
-
-
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
 
     private static final float speed = 200f;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
-    private OrthographicCamera camera;
+    private OrthographicCamera worldCamera;
+    private OrthographicCamera screenCamera;
     private AssetManager assetManager;
     private Fog fog;
     private Player player;
@@ -33,6 +32,7 @@ public class Main extends ApplicationAdapter {
 
     private GooseManager gooseManager;
     private Integer numberOfGeese;
+
 
     @Override
     public void create() {
@@ -49,19 +49,25 @@ public class Main extends ApplicationAdapter {
         assetManager.load("goosemap.tmx", TiledMap.class);
         assetManager.load("fog.png", Texture.class);
         assetManager.load("goose.png",Texture.class);
+        assetManager.load("player.png",Texture.class);
 
         //Could implement a loading screen; this will wait for everything to load before continuing for now
         assetManager.finishLoading();
+        spriteBatch = new SpriteBatch();
 
         //Map setup
         map = assetManager.get("goosemap.tmx", TiledMap.class);
         renderer = new OrthogonalTiledMapRenderer(map);
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 600);
-        camera.position.set(1280, 1280, 0);
-        camera.zoom = 0.75f;
-        spriteBatch = new SpriteBatch();
-        player = new Player("player.png");
+
+        //worldCamera (follows the game world and is used for the map, player and geese)
+        worldCamera = new OrthographicCamera();
+        worldCamera.setToOrtho(false, 800, 600);
+        worldCamera.position.set(1280, 1280, 0);
+        worldCamera.zoom = 0.75f;
+
+        //screenCamera (stays fixed to the screen and is used for UI and screen-covering effects like fog.)
+        screenCamera = new OrthographicCamera();
+        screenCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         //Get map dimensions
         int mapWidth = map.getProperties().get("width", Integer.class);
@@ -74,6 +80,9 @@ public class Main extends ApplicationAdapter {
         float worldHeight = mapHeight * tileHeight;
 
         //Initialise assets
+        Texture playerTexture = assetManager.get("player.png", Texture.class);
+        player = new Player(playerTexture);
+
         Texture fogTexture = assetManager.get("fog.png", Texture.class);
         fog = new Fog(fogTexture);
 
@@ -82,41 +91,47 @@ public class Main extends ApplicationAdapter {
         gooseManager = new GooseManager(gooseTexture, numberOfGeese, worldHeight, worldWidth);
     }
 
+
     @Override
     public void render() {
         float dt = Gdx.graphics.getDeltaTime();
 
         float move = speed * dt;
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) camera.position.x -= move;
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) camera.position.x += move;
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) camera.position.y += move;
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) camera.position.y -= move;
-        float halfWidth = camera.viewportWidth * 0.5f * camera.zoom;
-        float halfHeight = camera.viewportHeight * 0.5f * camera.zoom;
-        camera.position.x = MathUtils.clamp(camera.position.x, halfWidth, 2560 - halfWidth);
-        camera.position.y = MathUtils.clamp(camera.position.y, halfHeight, 2560 - halfHeight);
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) worldCamera.position.x -= move;
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) worldCamera.position.x += move;
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) worldCamera.position.y += move;
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) worldCamera.position.y -= move;
+        float halfWidth = worldCamera.viewportWidth * 0.5f * worldCamera.zoom;
+        float halfHeight = worldCamera.viewportHeight * 0.5f * worldCamera.zoom;
+        worldCamera.position.x = MathUtils.clamp(worldCamera.position.x, halfWidth, 2560 - halfWidth);
+        worldCamera.position.y = MathUtils.clamp(worldCamera.position.y, halfHeight, 2560 - halfHeight);
 
         gooseManager.update(dt);
         
         player.update(dt);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
-        camera.update();
-        renderer.setView(camera);
+        worldCamera.update();
+        renderer.setView(worldCamera);
         renderer.render();
 
-        //Spritebatch
-        spriteBatch.setProjectionMatrix(camera.combined);
+        //Draw map objects
+        spriteBatch.setProjectionMatrix(worldCamera.combined);
         spriteBatch.begin();
-        player.draw(spriteBatch, player.getX(), player.getY());
-        fog.draw(spriteBatch);
+        player.draw(spriteBatch);
         gooseManager.render(spriteBatch);
+        spriteBatch.end();
+
+        //Draw fog relative to screen
+        spriteBatch.setProjectionMatrix(screenCamera.combined);
+        spriteBatch.begin();
+        //fog.draw(spriteBatch); FOG RENDERING RENABLE IF NEEDED
         spriteBatch.end();
     }
 
     @Override
     public void dispose() {
-        player.dispose();
         assetManager.dispose();
+        spriteBatch.dispose();
     }
 }

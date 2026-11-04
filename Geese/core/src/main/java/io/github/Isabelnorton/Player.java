@@ -3,24 +3,25 @@ package io.github.Isabelnorton;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Player {
     
-    private Texture Player_texture;
+    private Sprite playerSprite;
 
     private float spriteSpeed = 200f;
     private float xPos;
     private float yPos;
-    private float playerWidth;
-    private float playerHeight;
 
-    public Player(String filePath){
-        this.Player_texture = new Texture(Gdx.files.internal(filePath));
-        this.xPos = 20;
-        this.yPos = 20;
-        this.playerWidth = 60;
-        this.playerHeight = 60;
+    public Player(Texture texture){
+        playerSprite = new Sprite(texture);
+
+        xPos = 1280;
+        yPos = 1280;
+
+        playerSprite.setSize(60,60);
+        playerSprite.setPosition(xPos, yPos);
     }
 
     public float getX() {
@@ -36,15 +37,11 @@ public class Player {
         if (Gdx.input.isKeyPressed(Input.Keys.D)) xPos += spriteSpeed * deltaTime;
         if (Gdx.input.isKeyPressed(Input.Keys.W)) yPos += spriteSpeed * deltaTime;
         if (Gdx.input.isKeyPressed(Input.Keys.S)) yPos -= spriteSpeed * deltaTime;
+
+        playerSprite.setPosition(xPos, yPos);
     }
 
-    public void draw(SpriteBatch batch, float x, float y){
-        batch.draw(Player_texture, x, y, playerWidth, playerHeight);
-    }
-
-    // @Override 
-    public void dispose(){
-        Player_texture.dispose();
-        
+     public void draw(SpriteBatch batch) {
+        playerSprite.draw(batch);
     }
 }
