@@ -14,18 +14,24 @@ public class Goose {
     private float targetY;
     private float speed;
     private float radius;
+
+    private float waitTimer;
+    private float waitDuration;
+    private float waitMax;
     
     //Constructor
-    public Goose(Texture texture, float x, float y) {
+    public Goose(Texture texture, float scale, float x, float y) {
         sprite = new Sprite(texture);
         sprite.setPosition(x, y);
+        sprite.setScale(scale);
         this.x = x;
         this.y = y;
 
-        //May be passed in in future
+        //May be passed from Main in the future
         state = "normal";
         speed = 20f;
-        radius = 10f; //alterable with difficulty if required
+        radius = 250f; //alterable with difficulty if required
+        waitMax = 3f;
 
         generateTarget(radius);
     }
@@ -34,14 +40,16 @@ public class Goose {
         x = getX();
         y = getY();
 
-        if (state == "Normal") {
+        if (state.equals("normal")) {
             //Radius for random movement -> target
             float dx = targetX - x;
             float dy = targetY - y;
             float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
             if (distance < 1f) {
-                generateTarget(radius);
+                state = "waiting";
+                waitDuration = MathUtils.random(0, waitMax);
+                waitTimer = 0f;
             }
             else {
                 x += (dx / distance) * speed * dt;
@@ -49,6 +57,14 @@ public class Goose {
             }
 
             sprite.setPosition(x, y);
+        }
+        else if (state.equals("waiting")) {
+            waitTimer += dt;
+
+            if (waitTimer >= waitDuration) {
+                generateTarget(radius);
+                state = "normal";
+            }
         }
     }
 
