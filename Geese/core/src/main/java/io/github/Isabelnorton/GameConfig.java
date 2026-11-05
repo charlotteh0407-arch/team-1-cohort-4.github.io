@@ -8,16 +8,29 @@ public class GameConfig{
     public static CameraConfig camera = new CameraConfig();
     public static PlayerConfig player = new PlayerConfig();
     public static ItemsConfig item = new ItemsConfig();
+    public static GooseConfig gooseConfig = new GooseConfig();
 
     public static class CameraConfig{
         public SizeConfig Viewport;
         public SizeConfig MapBounds;
         public float defaultZoom;
     }
+
     public static class PlayerConfig{
         public float speed;
         public PositionConfig StartPos;
         public SizeConfig Size;
+    }
+
+    public static class GooseConfig {
+        public Defaults defaults;
+
+        public static class Defaults {
+            public int numberOfGeese;
+            public int speed;
+            public int detectionRadius;
+            public int waitMax;
+        }
     }
 
     //nested the sub-item config classes to avoid them popping up in autocorrect
@@ -72,6 +85,7 @@ public class GameConfig{
         public CameraConfig Camera;
         public PlayerConfig Player;
         public ItemsConfig Items;
+        public GooseConfig Goose;
     }
     public static void load(){
         if (loaded) return;
@@ -90,6 +104,9 @@ public class GameConfig{
                 }
                 if (dump.Items != null) {
                     item = dump.Items;
+                }
+                if (dump.Goose != null) {
+                    gooseConfig = dump.Goose;
                 }
             }
             System.out.println("Config loaded succesfully");

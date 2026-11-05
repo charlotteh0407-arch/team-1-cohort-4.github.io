@@ -31,8 +31,6 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch spriteBatch;
 
     private GooseManager gooseManager;
-    private Integer numberOfGeese;
-
 
     @Override
     public void create() {
@@ -53,7 +51,7 @@ public class Main extends ApplicationAdapter {
 
         //Could implement a loading screen; this will wait for everything to load before continuing for now
         assetManager.finishLoading();
-        spriteBatch = new SpriteBatch();
+        System.out.println("Asset manager loaded successfully");
 
         //Map setup
         map = assetManager.get("goosemap.tmx", TiledMap.class);
@@ -61,9 +59,12 @@ public class Main extends ApplicationAdapter {
 
         //worldCamera (follows the game world and is used for the map, player and geese)
         worldCamera = new OrthographicCamera();
-        worldCamera.setToOrtho(false, 800, 600);
+
+        float vpWidth = GameConfig.camera.Viewport.width;
+        float vpHeight = GameConfig.camera.Viewport.height;
+        worldCamera.setToOrtho(false, vpWidth, vpHeight);
         worldCamera.position.set(1280, 1280, 0);
-        worldCamera.zoom = 0.75f;
+        worldCamera.zoom = GameConfig.camera.defaultZoom;
 
         //screenCamera (stays fixed to the screen and is used for UI and screen-covering effects like fog.)
         screenCamera = new OrthographicCamera();
@@ -80,6 +81,8 @@ public class Main extends ApplicationAdapter {
         worldHeight = mapHeight * tileHeight;
 
         //Initialise assets
+        spriteBatch = new SpriteBatch();
+
         Texture playerTexture = assetManager.get("player.png", Texture.class);
         player = new Player(playerTexture);
 
@@ -87,21 +90,11 @@ public class Main extends ApplicationAdapter {
         fog = new Fog(fogTexture);
 
         Texture gooseTexture = assetManager.get("goose.png",Texture.class);
-        numberOfGeese = 25; //change this?
-        gooseManager = new GooseManager(gooseTexture, numberOfGeese, worldHeight, worldWidth);
-        //goose = new Goose(gooseTexture); TOBY IS WORKING ON DIS
+        gooseManager = new GooseManager(gooseTexture, worldHeight, worldWidth);
 
-        //Map setup
         map = assetManager.get("goosemap.tmx", TiledMap.class);
         renderer = new OrthogonalTiledMapRenderer(map);
-        camera = new OrthographicCamera();
-        float vpWidth = GameConfig.camera.Viewport.width;
-        float vpHeight = GameConfig.camera.Viewport.height;
-        camera.setToOrtho(false, vpWidth, vpHeight);
-        camera.position.set(1280, 1280, 0);
-        camera.zoom = GameConfig.camera.defaultZoom;
-        spriteBatch = new SpriteBatch();
-        player = new Player("player.png");
+        player = new Player(playerTexture);
     }
 
 

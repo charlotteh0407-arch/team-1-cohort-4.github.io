@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 
+import io.github.Isabelnorton.GameConfig;
+
 public class Goose {
     private Sprite sprite;
     private float x;
@@ -18,6 +20,8 @@ public class Goose {
     private float waitTimer;
     private float waitDuration;
     private float waitMax;
+
+    private GameConfig.GooseConfig.Defaults config = GameConfig.gooseConfig.defaults;
     
     //Constructor
     public Goose(Texture texture, float scale, float x, float y) {
@@ -26,22 +30,18 @@ public class Goose {
         sprite.setScale(scale);
         this.x = x;
         this.y = y;
-
-        //May be passed from Main in the future
         state = "normal";
-        speed = 20f;
-        radius = 250f; //alterable with difficulty if required
-        waitMax = 3f;
+
+        speed = config.speed;
+        radius = config.detectionRadius; //alterable with difficulty if required
+        waitMax = config.waitMax;
 
         generateTarget(radius);
     }
 
     public void update(float dt) {
-        x = getX();
-        y = getY();
-
         if (state.equals("normal")) {
-            //Radius for random movement -> target
+            //Radius for random movement, Goose -> target
             float dx = targetX - x;
             float dy = targetY - y;
             float distance = (float) Math.sqrt(dx * dx + dy * dy);
@@ -77,13 +77,5 @@ public class Goose {
         float distance = MathUtils.random(0f, r);
         targetX = x + distance * MathUtils.cos(angle);
         targetY = y + distance * MathUtils.sin(angle);
-    }
-
-    private float getX() {
-        return x;
-    }
-
-    private float getY() {
-        return y;
     }
 }

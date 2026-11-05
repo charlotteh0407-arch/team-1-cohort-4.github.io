@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 
-
+import io.github.Isabelnorton.GameConfig;
 
 public class GooseManager {
     private Array<Goose> geese;
@@ -14,13 +14,13 @@ public class GooseManager {
     private float gooseScale = 0.15f;
 
     //Constructor
-    public GooseManager(Texture texture, Integer numberOfGeese, Float mapHeight, Float mapWidth) {
+    public GooseManager(Texture texture, Float mapHeight, Float mapWidth) {
         geese = new Array<>();
         gooseHeight = texture.getHeight() * gooseScale;
         gooseWidth = texture.getWidth() * gooseScale;
-
+        
         //Create geese
-        for (Integer count = 0; count<numberOfGeese; count++) {
+        for (Integer count = 0; count<GameConfig.gooseConfig.defaults.numberOfGeese; count++) {
             float x = MathUtils.random(mapWidth - gooseWidth);
             float y = MathUtils.random(mapHeight - gooseHeight);
             geese.add(new Goose(texture,gooseScale,x,y));
