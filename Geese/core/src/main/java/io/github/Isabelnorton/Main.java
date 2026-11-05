@@ -1,10 +1,8 @@
 package io.github.Isabelnorton;
 
 import io.github.Isabelnorton.items.ItemConfig;
-// import io.github.Isabelnorton.Player;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -20,11 +18,14 @@ import io.github.Isabelnorton.GeeseSystem.*;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
 
-    private static final float speed = 200f;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera worldCamera;
     private OrthographicCamera screenCamera;
+
+    private float worldWidth;
+    private float worldHeight;
+
     private AssetManager assetManager;
     private Fog fog;
     private Player player;
@@ -69,15 +70,15 @@ public class Main extends ApplicationAdapter {
         screenCamera = new OrthographicCamera();
         screenCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        //Get map dimensions
-        int mapWidth = map.getProperties().get("width", Integer.class);
-        int mapHeight = map.getProperties().get("height", Integer.class);
+        //Get world dimensions (actual dimensions of the simulated world)
+        float mapWidth = map.getProperties().get("width", Integer.class);
+        float mapHeight = map.getProperties().get("height", Integer.class);
 
-        int tileWidth = map.getProperties().get("tilewidth", Integer.class);
-        int tileHeight = map.getProperties().get("tileheight", Integer.class);
+        float tileWidth = map.getProperties().get("tilewidth", Integer.class);
+        float tileHeight = map.getProperties().get("tileheight", Integer.class);
 
-        float worldWidth = mapWidth * tileWidth;
-        float worldHeight = mapHeight * tileHeight;
+        worldWidth = mapWidth * tileWidth;
+        worldHeight = mapHeight * tileHeight;
 
         //Initialise assets
         Texture playerTexture = assetManager.get("player.png", Texture.class);
@@ -96,36 +97,47 @@ public class Main extends ApplicationAdapter {
     public void render() {
         float dt = Gdx.graphics.getDeltaTime();
 
-        float move = speed * dt;
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) worldCamera.position.x -= move;
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) worldCamera.position.x += move;
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) worldCamera.position.y += move;
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) worldCamera.position.y -= move;
-        float halfWidth = worldCamera.viewportWidth * 0.5f * worldCamera.zoom;
-        float halfHeight = worldCamera.viewportHeight * 0.5f * worldCamera.zoom;
-        worldCamera.position.x = MathUtils.clamp(worldCamera.position.x, halfWidth, 2560 - halfWidth);
-        worldCamera.position.y = MathUtils.clamp(worldCamera.position.y, halfHeight, 2560 - halfHeight);
-
+        // Update game objects
         gooseManager.update(dt);
-        
         player.update(dt);
+
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
+        // Centre camera on player
+        worldCamera.position.set(
+            player.getX() + 30,
+            player.getY() + 30,
+            0
+        );
+
+        // Keep camera within map boundaries
+        float halfWidth = worldCamera.viewportWidth * 0.5f * worldCamera.zoom;
+        float halfHeight = worldCamera.viewportHeight * 0.5f * worldCamera.zoom;
+
+        worldCamera.position.x = MathUtils.clamp(
+            worldCamera.position.x, halfWidth, worldWidth - halfWidth
+        );
+
+        worldCamera.position.y = MathUtils.clamp(
+            worldCamera.position.y, halfHeight, worldHeight - halfHeight
+        );
+
+        // Update camera and render map
         worldCamera.update();
         renderer.setView(worldCamera);
         renderer.render();
 
-        //Draw map objects
+        // Draw world objects
         spriteBatch.setProjectionMatrix(worldCamera.combined);
         spriteBatch.begin();
         player.draw(spriteBatch);
         gooseManager.render(spriteBatch);
         spriteBatch.end();
 
-        //Draw fog relative to screen
+        // Draw screen-space objects
         spriteBatch.setProjectionMatrix(screenCamera.combined);
         spriteBatch.begin();
-        //fog.draw(spriteBatch); FOG RENDERING RENABLE IF NEEDED
+        // fog.draw(spriteBatch);
         spriteBatch.end();
     }
 
