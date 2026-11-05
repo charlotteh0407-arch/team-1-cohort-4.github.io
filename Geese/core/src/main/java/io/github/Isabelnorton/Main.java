@@ -59,11 +59,9 @@ public class Main extends ApplicationAdapter {
 
         //worldCamera (follows the game world and is used for the map, player and geese)
         worldCamera = new OrthographicCamera();
-
         float vpWidth = GameConfig.camera.Viewport.width;
         float vpHeight = GameConfig.camera.Viewport.height;
         worldCamera.setToOrtho(false, vpWidth, vpHeight);
-        worldCamera.position.set(1280, 1280, 0);
         worldCamera.zoom = GameConfig.camera.defaultZoom;
 
         //screenCamera (stays fixed to the screen and is used for UI and screen-covering effects like fog.)
@@ -102,20 +100,21 @@ public class Main extends ApplicationAdapter {
     public void render() {
         float dt = Gdx.graphics.getDeltaTime();
 
-        // Update game objects
+        //Update game objects
         gooseManager.update(dt);
         player.update(dt);
 
+        //Clear previous frame
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
-        // Centre camera on player
+        //Centre camera on player
         worldCamera.position.set(
             player.getX() + 30,
             player.getY() + 30,
             0
         );
 
-        // Keep camera within map boundaries
+        //Keep camera within map boundaries
         float halfWidth = worldCamera.viewportWidth * 0.5f * worldCamera.zoom;
         float halfHeight = worldCamera.viewportHeight * 0.5f * worldCamera.zoom;
 
@@ -127,22 +126,22 @@ public class Main extends ApplicationAdapter {
             worldCamera.position.y, halfHeight, worldHeight - halfHeight
         );
 
-        // Update camera and render map
+        //Update camera and render map
         worldCamera.update();
         renderer.setView(worldCamera);
         renderer.render();
 
-        // Draw world objects
+        //Draw world objects
         spriteBatch.setProjectionMatrix(worldCamera.combined);
         spriteBatch.begin();
         player.draw(spriteBatch);
         gooseManager.render(spriteBatch);
         spriteBatch.end();
 
-        // Draw screen-space objects
+        //Draw screen-space objects
         spriteBatch.setProjectionMatrix(screenCamera.combined);
         spriteBatch.begin();
-        // fog.draw(spriteBatch);
+        fog.draw(spriteBatch); //when do we want to draw the fog?
         spriteBatch.end();
     }
 
