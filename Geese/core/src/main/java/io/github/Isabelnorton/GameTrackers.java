@@ -3,7 +3,6 @@ package io.github.Isabelnorton;
 import java.util.HashSet;
 import java.util.Set;
 
-
 public class GameTrackers {
 
     private float timeRemaining =300.0f;
