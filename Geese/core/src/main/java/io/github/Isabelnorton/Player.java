@@ -10,15 +10,15 @@ public class Player {
     
     private Sprite playerSprite;
 
-    private float spriteSpeed = 200f;
+    private float spriteSpeed = GameConfig.player.speed;
     private float xPos;
     private float yPos;
 
     public Player(Texture texture){
         playerSprite = new Sprite(texture);
 
-        xPos = 1280;
-        yPos = 1280;
+        xPos = GameConfig.player.StartPos.x;
+        yPos = GameConfig.player.StartPos.y;
 
         playerSprite.setSize(60,60);
         playerSprite.setPosition(xPos, yPos);

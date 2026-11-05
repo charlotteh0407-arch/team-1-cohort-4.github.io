@@ -1,6 +1,5 @@
 package io.github.Isabelnorton;
 
-import io.github.Isabelnorton.items.ItemConfig;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -38,7 +37,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         assetManager = new AssetManager();
-        ItemConfig.load();
+        GameConfig.load();
 
         //Setup the map loader
         assetManager.setLoader(
@@ -90,6 +89,19 @@ public class Main extends ApplicationAdapter {
         Texture gooseTexture = assetManager.get("goose.png",Texture.class);
         numberOfGeese = 25; //change this?
         gooseManager = new GooseManager(gooseTexture, numberOfGeese, worldHeight, worldWidth);
+        //goose = new Goose(gooseTexture); TOBY IS WORKING ON DIS
+
+        //Map setup
+        map = assetManager.get("goosemap.tmx", TiledMap.class);
+        renderer = new OrthogonalTiledMapRenderer(map);
+        camera = new OrthographicCamera();
+        float vpWidth = GameConfig.camera.Viewport.width;
+        float vpHeight = GameConfig.camera.Viewport.height;
+        camera.setToOrtho(false, vpWidth, vpHeight);
+        camera.position.set(1280, 1280, 0);
+        camera.zoom = GameConfig.camera.defaultZoom;
+        spriteBatch = new SpriteBatch();
+        player = new Player("player.png");
     }
 
 
