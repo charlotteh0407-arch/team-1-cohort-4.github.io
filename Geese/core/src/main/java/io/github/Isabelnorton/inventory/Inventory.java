@@ -16,17 +16,24 @@ public class Inventory {
     }
     
     public ItemStack getSlot(int i){
-        return slots[i];
+        return i < 0 || i >= slots.length ? null : slots[i];
     }
 
-    //Used in the pickup system to add items picked from the map to the invntory
     public boolean addItem(InventoryItem item, int quan){
+        if (item == null || quan <= 0) return false;
+        int capacity = 0;
+        for (ItemStack stack : slots) {
+            if (stack == null) capacity += item.getMaxStack();
+            else if (stack.isSameType(item)) capacity += item.getMaxStack() - stack.getQuantity();
+        }
+        if (capacity < quan) return false;
+
         for (ItemStack s : slots ){
-            if (quan == 0) break;
+            if (quan == 0) return true;
             if (s != null && s.isSameType(item) && s.hasRoom()){
                 int moved = Math.min(item.getMaxStack() - s.getQuantity(), quan);
                 s.setQuantity(s.getQuantity() + moved);
-                quan -=moved;
+                quan -= moved;
             }
         }
         for (int i = 0; i < slots.length && quan > 0; i++){
@@ -37,12 +44,14 @@ public class Inventory {
             }
         }
 
-        return quan == 0;
+        return true;
     }
 
-    //Remove item from inventory when item is used
-    public void removeItem(int slot){
-        slots[slot] = null;
+    public void consumeItem(int slot){
+        if (slot < 0 || slot >= slots.length || slots[slot] == null) return;
+        int remaining = slots[slot].getQuantity() - 1;
+        if (remaining == 0) slots[slot] = null;
+        else slots[slot].setQuantity(remaining);
     }
 
     //Check if item already exists in the inventory
