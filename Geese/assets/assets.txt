@@ -1,6 +1,7 @@
 Tiles.png
 Tiles.tsx
 fog.png
+goose.png
 goosemap.tmx
 items.json
 libgdx.png
