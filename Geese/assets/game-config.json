@@ -23,6 +23,15 @@
     }
   },
 
+  "Goose": {
+    "defaults": {
+      "numberOfGeese": 25,
+      "speed": 25,
+      "detectionRadius": 200,
+      "waitMax": 3
+    }
+  },
+
   "Items": {
     "Airhorn": {
       "cooldownSeconds": 5,
