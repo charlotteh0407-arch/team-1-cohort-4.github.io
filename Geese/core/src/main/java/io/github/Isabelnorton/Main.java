@@ -1,9 +1,7 @@
 package io.github.Isabelnorton;
 
-// import io.github.Isabelnorton.Player;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -16,20 +14,23 @@ import com.badlogic.gdx.assets.AssetManager;
 
 import io.github.Isabelnorton.GeeseSystem.*;
 
-
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-
 public class Main extends ApplicationAdapter {
 
-    private static final float speed = 200f;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
-    private OrthographicCamera camera;
+    private OrthographicCamera worldCamera;
+    private OrthographicCamera screenCamera;
+
+    private float worldWidth;
+    private float worldHeight;
+
     private AssetManager assetManager;
     private Fog fog;
     private Player player;
     private SpriteBatch spriteBatch;
-    private Goose goose;
+
+    private GooseManager gooseManager;
 
     @Override
     public void create() {
@@ -46,63 +47,107 @@ public class Main extends ApplicationAdapter {
         assetManager.load("goosemap.tmx", TiledMap.class);
         assetManager.load("fog.png", Texture.class);
         assetManager.load("goose.png",Texture.class);
+        assetManager.load("player.png",Texture.class);
 
         //Could implement a loading screen; this will wait for everything to load before continuing for now
         assetManager.finishLoading();
-
-        //Initialise assets
-        Texture fogTexture = assetManager.get("fog.png", Texture.class);
-        fog = new Fog(fogTexture);
-
-        Texture gooseTexture = assetManager.get("goose.png",Texture.class);
-        //goose = new Goose(gooseTexture); TOBY IS WORKING ON DIS
+        System.out.println("Asset manager loaded successfully");
 
         //Map setup
         map = assetManager.get("goosemap.tmx", TiledMap.class);
         renderer = new OrthogonalTiledMapRenderer(map);
-        camera = new OrthographicCamera();
+
+        //worldCamera (follows the game world and is used for the map, player and geese)
+        worldCamera = new OrthographicCamera();
         float vpWidth = GameConfig.camera.Viewport.width;
         float vpHeight = GameConfig.camera.Viewport.height;
-        camera.setToOrtho(false, vpWidth, vpHeight);
-        camera.position.set(1280, 1280, 0);
-        camera.zoom = GameConfig.camera.defaultZoom;
+        worldCamera.setToOrtho(false, vpWidth, vpHeight);
+        worldCamera.zoom = GameConfig.camera.defaultZoom;
+
+        //screenCamera (stays fixed to the screen and is used for UI and screen-covering effects like fog.)
+        screenCamera = new OrthographicCamera();
+        screenCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        //Get world dimensions (actual dimensions of the simulated world)
+        float mapWidth = map.getProperties().get("width", Integer.class);
+        float mapHeight = map.getProperties().get("height", Integer.class);
+
+        float tileWidth = map.getProperties().get("tilewidth", Integer.class);
+        float tileHeight = map.getProperties().get("tileheight", Integer.class);
+
+        worldWidth = mapWidth * tileWidth;
+        worldHeight = mapHeight * tileHeight;
+
+        //Initialise assets
         spriteBatch = new SpriteBatch();
-        player = new Player("player.png");
+
+        Texture playerTexture = assetManager.get("player.png", Texture.class);
+        player = new Player(playerTexture);
+
+        Texture fogTexture = assetManager.get("fog.png", Texture.class);
+        fog = new Fog(fogTexture);
+
+        Texture gooseTexture = assetManager.get("goose.png",Texture.class);
+        gooseManager = new GooseManager(gooseTexture, worldHeight, worldWidth);
+
+        map = assetManager.get("goosemap.tmx", TiledMap.class);
+        renderer = new OrthogonalTiledMapRenderer(map);
+        player = new Player(playerTexture);
     }
+
 
     @Override
     public void render() {
         float dt = Gdx.graphics.getDeltaTime();
-        float move = speed * dt;
-        float mapWidth = GameConfig.camera.MapBounds.width;
-        float mapHeight = GameConfig.camera.MapBounds.height;
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) camera.position.x -= move;
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) camera.position.x += move;
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) camera.position.y += move;
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) camera.position.y -= move;
-        float halfWidth = camera.viewportWidth * 0.5f * camera.zoom;
-        float halfHeight = camera.viewportHeight * 0.5f * camera.zoom;
-        camera.position.x = MathUtils.clamp(camera.position.x, halfWidth, mapWidth - halfWidth);
-        camera.position.y = MathUtils.clamp(camera.position.y, halfHeight, mapHeight - halfHeight);
 
+        //Update game objects
+        gooseManager.update(dt);
         player.update(dt);
+
+        //Clear previous frame
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
-        camera.update();
-        renderer.setView(camera);
+        //Centre camera on player
+        worldCamera.position.set(
+            player.getX() + 30,
+            player.getY() + 30,
+            0
+        );
+
+        //Keep camera within map boundaries
+        float halfWidth = worldCamera.viewportWidth * 0.5f * worldCamera.zoom;
+        float halfHeight = worldCamera.viewportHeight * 0.5f * worldCamera.zoom;
+
+        worldCamera.position.x = MathUtils.clamp(
+            worldCamera.position.x, halfWidth, worldWidth - halfWidth
+        );
+
+        worldCamera.position.y = MathUtils.clamp(
+            worldCamera.position.y, halfHeight, worldHeight - halfHeight
+        );
+
+        //Update camera and render map
+        worldCamera.update();
+        renderer.setView(worldCamera);
         renderer.render();
 
+        //Draw world objects
+        spriteBatch.setProjectionMatrix(worldCamera.combined);
         spriteBatch.begin();
-        player.draw(spriteBatch, player.getX(), player.getY());
-        fog.draw(spriteBatch);
+        player.draw(spriteBatch);
+        gooseManager.render(spriteBatch);
         spriteBatch.end();
-        
+
+        //Draw screen-space objects
+        spriteBatch.setProjectionMatrix(screenCamera.combined);
+        spriteBatch.begin();
+        fog.draw(spriteBatch); //when do we want to draw the fog?
+        spriteBatch.end();
     }
 
     @Override
     public void dispose() {
-        player.dispose();
-        fog.dispose();
         assetManager.dispose();
+        spriteBatch.dispose();
     }
 }

@@ -4,12 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Disposable;
 
 
-public class Fog implements Disposable {
+public class Fog {
 
-    private final SpriteBatch batch = new SpriteBatch();
     private final Texture texture;
     private float drift;
 
@@ -29,10 +27,5 @@ public class Fog implements Disposable {
                 drift,
                 w / texture.getWidth() + drift,
                 h / texture.getHeight() + drift);
-    }
-
-    @Override
-    public void dispose() {
-        batch.dispose();
     }
 }
