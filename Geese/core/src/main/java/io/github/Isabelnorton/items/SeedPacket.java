@@ -30,7 +30,7 @@ public class SeedPacket implements InventoryItem {
 
     @Override
     public boolean use(ItemUser user) {
-        user.throwSeeds(range, radius);
+
         return true;
     }
 
