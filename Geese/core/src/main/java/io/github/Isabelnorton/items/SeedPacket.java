@@ -1,6 +1,5 @@
 package io.github.Isabelnorton.items;
 
-import com.badlogic.gdx.Game;
 import io.github.Isabelnorton.GameConfig;
 
 public class SeedPacket implements InventoryItem {
@@ -31,6 +30,7 @@ public class SeedPacket implements InventoryItem {
 
     @Override
     public boolean use(ItemUser user) {
+
         return true;
     }
 

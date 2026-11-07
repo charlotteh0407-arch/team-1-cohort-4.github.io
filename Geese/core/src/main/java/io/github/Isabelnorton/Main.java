@@ -109,8 +109,8 @@ public class Main extends ApplicationAdapter {
 
         //Centre camera on player
         worldCamera.position.set(
-            player.getX() + 30,
-            player.getY() + 30,
+            player.getPos().x + 30,
+            player.getPos().y + 30,
             0
         );
 
